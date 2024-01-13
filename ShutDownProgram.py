@@ -10,7 +10,7 @@ import requests
 
 def line(me):
     url = "https://notify-api.line.me/api/notify"
-    token = "mmjcR1plHjBEGizK6p3ZP7rA9hERqz9VwDhfNr1VOKf"
+    token = "TOKEN"
     headers = {"Authorization": "Bearer " + token}
     message = me
     payload = {"message":  message}
