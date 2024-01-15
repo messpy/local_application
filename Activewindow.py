@@ -1,55 +1,87 @@
+import tkinter as tk
+from tkinter import ttk
 import win32gui
 import win32con
-import time
-from win32gui import GetWindowText, GetForegroundWindow
-from plyer import notification
 
-def wcancel(gw):
-    print("CancelにしたいWindowを選択してください")
-    notification.notify(
-        title="Active解除設定",
-        message="CancelにしたいWindowを選択してください",
-        app_name=gw,
-        timeout=10
-    )
-    for i in range(3, 0, -1):
-        print(i)
-        time.sleep(1)
+class WindowManagerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Window Manager")
 
-    g = GetWindowText(GetForegroundWindow())
-    memo = win32gui.FindWindow(None, g)
-    time.sleep(1)
-    win32gui.SetWindowPos(memo, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-    t = f"{g}をアクティブ外にしました"
-    return t
+        self.status_label = ttk.Label(root, text="")
+        self.status_label.pack(pady=20)
 
-def windows(gw):
-    memo = win32gui.FindWindow(None, gw)
-    time.sleep(1)
-    win32gui.SetWindowPos(memo, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-    t = f"{gw}をアクティブにしました"
-    return t
+        self.activate_button = ttk.Button(root, text="On", command=self.activate_window)
+        self.activate_button.pack(pady=10)
+
+        self.deactivate_button = ttk.Button(root, text="Off", command=self.deactivate_window)
+        self.deactivate_button.pack(pady=10)
+
+        # タイマーの周期を設定 (ミリ秒)
+        self.polling_interval = 1000  # 1秒ごとに確認
+        self.countdown = 3  # カウントダウンの秒数
+
+        # イベントループを開始
+        self.root.after(self.polling_interval, self.check_window_state)
+
+    def set_status(self, status_text):
+        self.status_label.config(text=status_text)
+
+    def activate_window(self):
+        self.countdown = 3
+        self.countdown_label()
+        self.root.after(3000, self.do_activate_window)
+
+    def deactivate_window(self):
+        self.countdown = 3
+        self.countdown_label()
+        self.root.after(3000, self.do_deactivate_window)
+
+    def countdown_label(self):
+        if self.countdown > 0:
+            self.set_status(f"処理開始まで {self.countdown} 秒...")
+            self.countdown -= 1
+            self.root.after(1000, self.countdown_label)
+        else:
+            self.set_status("")
+
+    def do_activate_window(self):
+        gw = win32gui.GetWindowText(win32gui.GetForegroundWindow())
+        if gw:
+            memo = win32gui.FindWindow(None, gw)
+            win32gui.SetWindowPos(memo, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+            status_text = f"{gw}をアクティブにしました"
+        else:
+            status_text = "Active Cancel"
+
+        self.set_status(status_text)
+
+    def do_deactivate_window(self):
+        gw = win32gui.GetWindowText(win32gui.GetForegroundWindow())
+        if gw:
+            memo = win32gui.FindWindow(None, gw)
+            win32gui.SetWindowPos(memo, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+            status_text = f"{gw}を非アクティブにしました"
+        else:
+            status_text = "No active window to deactivate"
+
+        self.set_status(status_text)
+
+    def check_window_state(self):
+        # ウィンドウの状態を確認
+        gw = win32gui.GetWindowText(win32gui.GetForegroundWindow())
+        if gw:
+            status_text = f"現在のウィンドウ: {gw}"
+        else:
+            status_text = "現在のウィンドウがありません"
+
+        # 状態を表示
+        self.set_status(status_text)
+
+        # 次の確認をスケジュール
+        self.root.after(self.polling_interval, self.check_window_state)
 
 if __name__ == "__main__":
-    print("ActiveにしたいWindowを選択してください\n(3秒後キャンセル設定）")
-
-    for i in range(3, 0, -1):
-        print(i)
-        time.sleep(1)
-
-    gw = GetWindowText(GetForegroundWindow())
-    print(gw)
-
-    if gw == "":
-        print("Active Cancel")
-        a = wcancel(gw)
-    else:
-        print("Active Window")
-        a = windows(gw)
-
-    notification.notify(
-        title="Active",
-        message=a,
-        app_name="Active Window",
-        timeout=10
-    )
+    root = tk.Tk()
+    app = WindowManagerApp(root)
+    root.mainloop()
