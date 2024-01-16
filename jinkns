@@ -1,0 +1,32 @@
+import requests
+from datetime import datetime
+
+# Jenkinsのジョブやビルドの情報を取得するためのAPIエンドポイント
+jenkins_api_url = "https://your-jenkins-instance/job/your-job-name/api/json"
+
+# JenkinsのAPIにリクエストを送信してジョブの情報を取得
+response = requests.get(jenkins_api_url)
+job_info = response.json()
+
+# 最新のビルドの情報を取得
+latest_build_number = job_info['lastBuild']['number']
+build_api_url = f"https://your-jenkins-instance/job/your-job-name/{latest_build_number}/api/json"
+build_info = requests.get(build_api_url).json()
+
+# ビルドの実行日時を取得
+timestamp = build_info['timestamp'] / 1000  # ミリ秒から秒に変換
+build_date = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d')
+
+# 今日の日付を取得
+today = datetime.now().strftime('%Y-%m-%d')
+
+# 今日のビルドであればファイルをダウンロード
+if build_date == today:
+    file_url = "https://your-jenkins-instance/job/your-job-name/lastSuccessfulBuild/artifact/path/to/your/file.txt"
+    file_response = requests.get(file_url)
+
+    # ファイルを保存する例
+    with open('downloaded_file.txt', 'wb') as file:
+        file.write(file_response.content)
+else:
+    print("今日のビルドはまだ実行されていません。")
