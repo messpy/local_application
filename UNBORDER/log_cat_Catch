@@ -6,20 +6,23 @@ import re
 def search_and_print(file_path):
     with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
         content = file.read()
+        lines = content.split('\n')
 
         # ①を探す
-        match_1 = re.search(r'ABC|DEFB|CAGE', content)
-        if match_1:
+        matches_1 = re.finditer(r'ABC|DEFB|CAGE', content)
+        for match_1 in matches_1:
             result_1 = match_1.group()
-            
+
             # ②を探す
-            match_2 = re.search(r'abc|dcb|efc', content)
-            if match_2:
+            matches_2 = re.finditer(r'abc|dcb|efc', content)
+            for match_2 in matches_2:
                 result_2 = match_2.group()
 
-                # ファイル名と結果を表示
+                # ファイル名、行数、結果を表示
                 print(f"ファイル名: {file_path}")
+                print(f"行数: {lines.index(match_1.group(0)) + 1}")
                 print(f"①: {result_1}")
+                print(f"行数: {lines.index(match_2.group(0)) + 1}")
                 print(f"②: {result_2}")
                 print("\n")
 
