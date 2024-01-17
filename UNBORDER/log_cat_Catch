@@ -21,11 +21,11 @@ def search_and_print(file_path):
                 # ファイル名、行数、結果を表示
                 print(f"ファイル名: {file_path}")
 
-                if match_1:
+                if match_1 is not None:
                     print(f"行数(①): {lines.index(match_1.group(0)) + 1}")
                     print(f"①: {result_1}")
 
-                if match_2:
+                if match_2 is not None:
                     print(f"行数(②): {lines.index(match_2.group(0)) + 1}")
                     print(f"②: {result_2}")
 
