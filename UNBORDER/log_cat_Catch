@@ -1,50 +1,57 @@
-import tkinter as tk
-from tkinter import filedialog
 import os
 import re
+import xlwings as xw
 
-def search_and_print(file_path):
+def search_and_print(file_path, book):
+    # ログファイルを開く
     with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
         content = file.read()
         lines = content.split('\n')
 
-        # ①を探す
-        matches_1 = re.finditer(r'ABC|DEFB|CAGE', content)
-        for match_1 in matches_1:
-            result_1 = match_1.group()
+        # エクセルブックからC行とD行のワードを取得
+        c_words = book.sheets[0].range('C:C').value
+        d_words = book.sheets[0].range('D:D').value
 
-            # ②を探す
-            matches_2 = re.finditer(r'abc|dcb|efc', content)
-            for match_2 in matches_2:
-                result_2 = match_2.group()
+        # 各行を検索
+        c_matches = {word: 0 for word in c_words}
+        d_matches = {word: 0 for word in d_words}
 
-                # ファイル名、行数、結果を表示
-                print(f"ファイル名: {file_path}")
+        for i, line in enumerate(lines, start=1):
+            for c_word in c_words:
+                if c_word and c_word in line:
+                    c_matches[c_word] += 1
 
-                if match_1 is not None:
-                    print(f"行数(①): {lines.index(match_1.group(0)) + 1}")
-                    print(f"①: {result_1}")
+            for d_word in d_words:
+                if d_word and d_word in line:
+                    d_matches[d_word] += 1
 
-                if match_2 is not None:
-                    print(f"行数(②): {lines.index(match_2.group(0)) + 1}")
-                    print(f"②: {result_2}")
+        print_result(file_path, c_matches, d_matches)
 
-                print("\n")
+def print_result(file_path, c_matches, d_matches):
+    print(f"\n開始: {file_path}")
+    print("C行のワード:")
+    for word, count in c_matches.items():
+        print(f"   {word}: {count} 件")
 
-def process_folder(folder_path):
+    print("D行のワード:")
+    for word, count in d_matches.items():
+        print(f"   {word}: {count} 件")
+
+def process_folder(folder_path, book):
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".log"):
                 file_path = os.path.join(root, file)
-                search_and_print(file_path)
+                search_and_print(file_path, book)
 
-def select_folder():
-    root = tk.Tk()
-    root.withdraw()
+# エクセルファイルのパス
+excel_file_path = r"kent\Desktop\2.xlsx"
+book = xw.Book(excel_file_path)
 
-    folder_path = filedialog.askdirectory(title="フォルダを選択")
-    if folder_path:
-        process_folder(folder_path)
-
-# フォルダ選択ダイアログを表示し、処理を開始
-select_folder()
+# ログフォルダを選択し処理を開始
+folder_path = input("ログフォルダを入力してください: ")  # フォルダのパスを手動で入力
+if os.path.isdir(folder_path):
+    process_folder(folder_path, book)
+    print("終了")
+else:
+    print("有効なフォルダを指定してください。")
