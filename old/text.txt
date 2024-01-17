@@ -1,0 +1,16 @@
+import tkinter as tk
+import pyperclip
+
+def copy_to_clipboard(text):
+    pyperclip.copy(text)
+
+root = tk.Tk()
+root.title("Copy to Clipboard")
+
+button_texts = ["Copy 1", "Copy 2", "Copy 3", "Copy 4", "Copy 5"]
+
+for text in button_texts:
+    button = tk.Button(root, text=text, command=lambda t=text: copy_to_clipboard(t))
+    button.pack(pady=5)
+
+root.mainloop()
