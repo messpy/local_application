@@ -1,0 +1,21 @@
+import subprocess
+import time
+
+def start_teraterm(port):
+    # TERATERMの実行
+    process = subprocess.Popen(['teraterm', '/C=1', '/BAUD=115200', f'/P={port}'])
+
+    # ポートがオープンするまで待機
+    time.sleep(5)  # 適切な待機時間を設定
+
+    # コマンドを送信
+    send_command(process, 'your_command_here')
+
+def send_command(process, command):
+    # コマンドの送信
+    process.stdin.write(f"{command}\n")
+    process.stdin.flush()
+
+if __name__ == "__main__":
+    port_number = "COM1"  # 利用するシリアルポートを指定
+    start_teraterm(port_number)
