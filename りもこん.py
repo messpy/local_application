@@ -1,6 +1,6 @@
 import tkinter as tk
 import pyperclip
-
+#リモコン
 class ButtonApp:
     def __init__(self, root):
         self.root = root
