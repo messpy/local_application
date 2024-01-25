@@ -1,0 +1,11 @@
+import subprocess
+from tkinter import filedialog
+
+openfile = r"C:\Users\910143\AppData\Local\Microsoft\WindowsApps\idle3.10.exe"
+
+a = r'C:\Windows\notepad.exe'
+
+dir = r"C:\Users\910143\Desktop"
+fle = filedialog.askopenfilename(initialdir=dir)
+
+subprocess.Popen([openfile,fle], shell=True)
