@@ -1,6 +1,3 @@
-import pyperclip
-import pyautogui as pgui
-import time
 import glob
 import os
 import tkinter.filedialog
