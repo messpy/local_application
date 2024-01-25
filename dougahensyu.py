@@ -18,7 +18,7 @@ while True:
     hight += 2
     x = str(i)
     #screenshot toriming
-    cv2.imwrite(f"/home/kent/ダウンロード/movie_edit/Routput{x}.png", toriming_data)
+    cv2.imwrite(f"/home/*/ダウンロード/movie_edit/Routput{x}.png", toriming_data)
 #ocr
     sleep(1)
     if i == 5:
