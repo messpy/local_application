@@ -1,0 +1,22 @@
+import psutil
+import subprocess
+
+def check_wifi_connection():
+    # Wi-Fiが接続されているか確認
+    try:
+        output = subprocess.check_output(["iwgetid", "-r"]).decode().strip()
+        return bool(output)
+    except subprocess.CalledProcessError:
+        return False
+
+def main():
+    if not check_wifi_connection():
+        # Wi-Fiに接続されていない場合の処理
+        # PCが閉じた時にスリープにならない
+        subprocess.run(["powercfg", "-change", "-monitor-timeout-ac", "0"])
+        # 明るさが減る（適切なコマンドを使用してください）
+        # 音量が0になる（適切なコマンドを使用してください）
+        # 例： subprocess.run(["nircmd", "setsysvolume", "0"])
+
+if __name__ == "__main__":
+    main()
