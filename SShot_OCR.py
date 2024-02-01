@@ -2,9 +2,11 @@ from PIL import ImageGrab, Image
 import time
 import pytesseract
 
+import pytesseract
+
 def capture_clipboard_image_and_ocr(filename='crs.png'):
     try:
-        # クリップボードの画像をキャプチャ
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         screenshot = ImageGrab.grabclipboard()
         dir_path = "C:\\Users\\kent\\Desktop"
         file_path = f"{dir_path}\\{filename}"
