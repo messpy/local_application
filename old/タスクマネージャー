@@ -1,0 +1,60 @@
+import tkinter as tk
+import pygetwindow as gw
+from PIL import ImageGrab, Image, ImageTk
+
+class ScreenshotApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Screenshot App")
+        self.master.geometry("300x200")
+
+        self.label = tk.Label(self.master, text="右クリックでアクティブなウィンドウのスクリーンショット")
+        self.label.pack(pady=20)
+
+        # マウスのクリックイベントを監視
+        self.master.bind("<Button-3>", self.capture_and_display)
+
+    def capture_and_display(self, event):
+        # アクティブなウィンドウを取得
+        active_window = gw.getActiveWindow()
+
+        if active_window:
+            # アクティブなウィンドウの位置情報を取得
+            left, top, right, bottom = active_window.left, active_window.top, active_window.right, active_window.bottom
+
+            # アクティブなウィンドウのスクリーンショットを取得
+            screenshot = ImageGrab.grab(bbox=(left, top, right, bottom))
+
+            # スクリーンショットを表示
+            self.display_screenshot(screenshot)
+        else:
+            print("アクティブなウィンドウが見つかりません。")
+
+    def display_screenshot(self, screenshot):
+        # スクリーンショットをPIL ImageからTkinter PhotoImageに変換
+        screenshot_tk = ImageTk.PhotoImage(screenshot)
+
+        # 新しいウィンドウを作成
+        display_window = tk.Toplevel(self.master)
+        display_window.title("Screenshot Display")
+
+        # 画像を表示するキャンバスを作成
+        canvas = tk.Canvas(display_window, width=screenshot.width, height=screenshot.height)
+        canvas.pack()
+
+        # キャンバスにスクリーンショットを表示
+        canvas.create_image(0, 0, anchor=tk.NW, image=screenshot_tk)
+
+        # Tkinter PhotoImageオブジェクトを保持しておくことで、
+        # ガベージコレクションによりオブジェクトが破棄されないようにする
+        canvas.image = screenshot_tk
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ScreenshotApp(root)
+
+    # 別ウィンドウで表示
+    display_root = tk.Tk()
+    app_display = ScreenshotApp(display_root)
+
+    root.mainloop()
