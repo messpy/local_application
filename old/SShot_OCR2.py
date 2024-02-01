@@ -9,12 +9,10 @@ class ScreenshotApp:
         self.master = master
         self.master.title("Screenshot App")
         self.master.geometry("300x200")
+        self.master.attributes('-topmost', 1)  # メインウィンドウを常に最前面に保つ
 
-        # メインウィンドウを常に最前面に
-        self.master.wm_attributes('-topmost', True)
-
-        # サブウィンドウを右上に配置
-        self.display_window = None
+        self.label = tk.Label(self.master, text="右クリックまたはボタンクリックでスクリーンショット")
+        self.label.pack(pady=20)
 
         # ボタンを追加
         self.button = tk.Button(self.master, text="スクリーンショットを撮影", command=self.start_countdown)
@@ -34,40 +32,44 @@ class ScreenshotApp:
         # カウントダウン終了後、アクティブなウィンドウのスクリーンショットを取得
         active_window = gw.getActiveWindow()
         if active_window:
+            # Bring the active window to the front temporarily
+            active_window.activate()
+
+            # Get the dimensions of the active window
             left, top, right, bottom = active_window.left, active_window.top, active_window.right, active_window.bottom
-            screenshot = ImageGrab.grab(bbox=(left, top, right, bottom))
+            width = right - left
+            height = bottom - top
+
+            # Capture the screenshot of the active window only
+            screenshot = ImageGrab.grab(bbox=(left, top, left + width, top + height))
 
             # スクリーンショットを300x300にリサイズ
             screenshot = screenshot.resize((300, 300))
 
-            # サブウィンドウを作成
-            self.display_window = self.create_display_window(screenshot, active_window.title)
-
+            # スクリーンショットを表示
+            self.display_screenshot(active_window.title, screenshot)
         else:
             print("アクティブなウィンドウが見つかりません。")
 
-    def create_display_window(self, screenshot, window_title):
+    def display_screenshot(self, window_title, screenshot):
         # スクリーンショットをPIL ImageからTkinter PhotoImageに変換
         screenshot_tk = ImageTk.PhotoImage(screenshot)
 
-        # サブウィンドウを作成
+        # 新しいウィンドウを作成
         display_window = tk.Toplevel(self.master)
-        display_window.title(window_title)
+        display_window.title(f"Screenshot of {window_title}")  # ウィンドウタイトルをアクティブなウィンドウの名前に
+        display_window.attributes('-topmost', 1)  # サブウィンドウを常に最前面に保つ
+        display_window.geometry("400x400+1000+0")  # ウィンドウの位置をもっと右上に配置
 
         # 画像を表示するキャンバスを作成
-        canvas = tk.Canvas(display_window)  # widthとheightは指定しない
+        canvas = tk.Canvas(display_window)
         canvas.pack()
 
         # スクリーンショットをキャンバスに表示
-        canvas.create_image(0, 0, anchor=tk.NW, image=screenshot_tk)  # widthとheightは削除
+        canvas.create_image(0, 0, anchor=tk.NW, image=screenshot_tk)
 
         # Tkinter PhotoImageオブジェクトを保持
         canvas.image = screenshot_tk
-
-        # サブウィンドウを右上に配置
-        display_window.geometry("+%d+%d" % (self.master.winfo_width() - display_window.winfo_width(), 0))
-
-        return display_window
 
 if __name__ == "__main__":
     root = tk.Tk()
