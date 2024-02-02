@@ -6,7 +6,7 @@ zff = filedialog.askopenfilename(title="zip")
 
 def openzip(pas,f):
     zff = f
-    zfff=r"C:\Users\kent\Desktop"
+    zfff=r"C:\Users\username\Desktop"
     with zipfile.ZipFile(zff,"r")as zf:
         try:
             zf.extractall(path=zfff,pwd=pas.encode())
