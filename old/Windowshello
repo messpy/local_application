@@ -1,0 +1,16 @@
+import winbio
+
+# 顔認証の開始
+session = winbio.Session()
+
+# 顔認証情報の取得
+result = session.acquire_face()
+
+# 認証成功の場合
+if result.status == winbio.STATUS_SUCCESS:
+    print("認証成功")
+else:
+    print("認証失敗")
+
+# セッションの終了
+session.close()
