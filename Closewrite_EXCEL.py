@@ -1,23 +1,61 @@
 import openpyxl
 
 # Excelファイルのパス
-excel_file_path = 'your_excel_file.xlsx'
+excel_file_path = 'test.xlsx'
 
 # ワークブックを開く
 workbook = openpyxl.load_workbook(excel_file_path)
 
-# シートを選択
-sheet = workbook.active
+rowclm = 5
 
-# ユーザーに対話的に中心のセルを入力
-center_row = int(input("中心のセルの行を入力してください: "))
-center_column = int(input("中心のセルの列を入力してください: "))
+def first_choice():   
+    # シートを選択
+    sheet_names = workbook.sheetnames
+    i = 0
+    for shtname in sheet_names:
+        print(str(i)+shtname)
+        i += 1
+        shtnum=int(input("何番目のシートを表示しますか？"))
+        center_cell_address = input("Cellを選択してください (例: E6): ")  # 修正
+        sht = workbook.worksheets[shtnum]
+        center_cell = sht[center_cell_address]  # 修正
+        return sht, center_cell
 
-# 周りの10×10のセルを表示
-for row in range(center_row - 5, center_row + 5 + 1):
-    for col in range(center_column - 5, center_column + 5 + 1):
-        cell_value = sheet.cell(row=row, column=col).value
-        print(f"セル({row}, {col})の値: {cell_value}")
 
-# ワークブックを閉じる
-workbook.close()
+
+
+def cell_display(rowclm, sht, center_cell):        
+    center_row, center_column = center_cell.row, center_cell.column
+
+    # ヘッダー行
+    print("   ", end="")
+    for col_offset in range(-2, 3):
+        target_column = center_column + col_offset
+        if 1 <= target_column <= sht.max_column:
+            print(f"{sht.cell(row=1, column=target_column).column_letter:^10}", end="")
+        else:
+            print(" " * 10, end="")
+    print()  # 改行
+
+    for row_offset in range(-2, 3):
+        target_row = center_row + row_offset
+
+        if 1 <= target_row <= sht.max_row:
+            print(f"{target_row:2d} ", end="")
+            for col_offset in range(-2, 3):
+                target_column = center_column + col_offset
+                
+                if 1 <= target_column <= sht.max_column:
+                    current_cell = sht.cell(row=target_row, column=target_column)
+                    print(f"{str(current_cell.value):^10}", end="")
+                else:
+                    print(" " * 10, end="")  # 列が存在しない場合は空白セル
+
+            print()  # 改行
+
+if __name__ == "__main__":
+    sht, center_cell = first_choice()
+    cell_display(rowclm, sht, center_cell)
+
+    # ワークブックを閉じる
+    workbook.close()
