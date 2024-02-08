@@ -1,29 +1,36 @@
+理解しました。指定した複数のジョブを一時停止するために、リストにジョブ名を入れる機能を追加したスクリプトを作成します。以下がその例です。
+
+```python
 import requests
 
-def pause_job(jenkins_url, job_name, username, password):
+def pause_jobs(jenkins_url, job_names, username, password):
     # Jenkinsの認証情報を設定
     auth = (username, password)
     
-    # JenkinsジョブのURLを構築
-    job_url = f"{jenkins_url}/job/{job_name}/"
-    
-    # Jenkinsジョブを一時停止するためのAPIエンドポイント
-    pause_url = f"{job_url}/pause"
-    
-    try:
-        # Jenkinsジョブを一時停止
-        response = requests.post(pause_url, auth=auth)
-        if response.status_code == 200:
-            print(f"ジョブ '{job_name}' を一時停止しました。")
-        else:
-            print(f"ジョブ '{job_name}' を一時停止できませんでした。ステータスコード: {response.status_code}")
-    except Exception as e:
-        print(f"エラーが発生しました: {e}")
+    for job_name in job_names:
+        # JenkinsジョブのURLを構築
+        job_url = f"{jenkins_url}/job/{job_name}/"
+        
+        # Jenkinsジョブを一時停止するためのAPIエンドポイント
+        pause_url = f"{job_url}/pause"
+        
+        try:
+            # Jenkinsジョブを一時停止
+            response = requests.post(pause_url, auth=auth)
+            if response.status_code == 200:
+                print(f"ジョブ '{job_name}' を一時停止しました。")
+            else:
+                print(f"ジョブ '{job_name}' を一時停止できませんでした。ステータスコード: {response.status_code}")
+        except Exception as e:
+            print(f"エラーが発生しました: {e}")
 
-# JenkinsのURL、ジョブ名、ユーザー名、パスワードを指定して関数を呼び出す
+# JenkinsのURL、ジョブ名のリスト、ユーザー名、パスワードを指定して関数を呼び出す
 jenkins_url = "http://jenkins.example.com"
-job_name = "your_job_name"
+job_names = ["job1", "job2", "job3"]  # 一時停止させたいジョブ名のリスト
 username = "your_username"
 password = "your_password"
 
-pause_job(jenkins_url, job_name, username, password)
+pause_jobs(jenkins_url, job_names, username, password)
+```
+
+このスクリプトは、指定したリスト内の全てのジョブを一時停止します。必要に応じて、`job_names`リストに停止させたいジョブ名を追加または削除してください。
