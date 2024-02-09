@@ -1,14 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 
-rem デスクトップのPythonファイルをダウンロードフォルダに移動
-move %userprofile%\Desktop\*.py %userprofile%\Downloads
+rem デスクトップのPythonファイルを "Process" フォルダに移動
+move %userprofile%\Desktop\*.py %userprofile%\Desktop\Process
 
-rem ダウンロードフォルダに移動したPythonファイルのショートカットをデスクトップに作成
-cd %userprofile%\Downloads
+rem "Process" フォルダに移動したPythonファイルのショートカットをデスクトップに作成
+cd %userprofile%\Desktop\Process
 for %%f in (*.py) do (
-    set "target=%%~nf.lnk"
-    set "link=%userprofile%\Desktop\!target!"
+    set "target=%%~nf"
+    set "link=%userprofile%\Desktop\!target!.lnk"
     set "target=!cd!\%%f"
     echo Creating shortcut for !target! to !link!
     powershell -Command "$WScriptShell = New-Object -ComObject WScript.Shell; $Shortcut = $WScriptShell.CreateShortcut('!link!'); $Shortcut.TargetPath = '!target!'; $Shortcut.Save()"
