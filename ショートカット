@@ -2,10 +2,10 @@
 setlocal enabledelayedexpansion
 
 rem デスクトップのPythonファイルを "Process" フォルダに移動
-move %userprofile%\Desktop\*.py %userprofile%\Desktop\Process
+move "%userprofile%\Desktop\*.py" "%userprofile%\Desktop\Process"
 
 rem "Process" フォルダに移動したPythonファイルのショートカットをデスクトップに作成
-cd %userprofile%\Desktop\Process
+cd "%userprofile%\Desktop\Process"
 for %%f in (*.py) do (
     set "target=%%~nf"
     set "link=%userprofile%\Desktop\!target!.lnk"
