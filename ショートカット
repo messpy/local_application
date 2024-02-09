@@ -1,15 +1,34 @@
-@echo off
-setlocal enabledelayedexpansion
+import os
+import shutil
+import winshell
 
-rem デスクトップのPythonファイルを "Process" フォルダに移動
-move "%userprofile%\Desktop\*.py" "%userprofile%\Desktop\Process"
+def create_shortcut(source_path, target_folder):
+    # ショートカットを作成するフォルダが存在しない場合は作成する
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+    
+    # ショートカットを作成する
+    target_path = os.path.join(target_folder, os.path.basename(source_path) + ".lnk")
+    winshell.CreateShortcut(
+        Path=target_path,
+        Target=source_path,
+        Description="Shortcut to {}".format(os.path.basename(source_path))
+    )
 
-rem "Process" フォルダに移動したPythonファイルのショートカットをデスクトップに作成
-cd "%userprofile%\Desktop\Process"
-for %%f in (*.py) do (
-    set "target=%%~nf"
-    set "link=%userprofile%\Desktop\!target!.lnk"
-    set "target=!cd!\%%f"
-    echo Creating shortcut for !target! to !link!
-    powershell -Command "$WScriptShell = New-Object -ComObject WScript.Shell; $Shortcut = $WScriptShell.CreateShortcut('!link!'); $Shortcut.TargetPath = '!target!'; $Shortcut.Save()"
-)
+# デスクトップのPythonファイルを "Process" フォルダに移動
+source_folder = os.path.join(os.path.expanduser("~"), "Desktop")
+target_folder = os.path.join(source_folder, "Process")
+
+if not os.path.exists(target_folder):
+    os.makedirs(target_folder)
+
+for filename in os.listdir(source_folder):
+    if filename.endswith(".py"):
+        source_path = os.path.join(source_folder, filename)
+        shutil.move(source_path, target_folder)
+
+# "Process" フォルダに移動したPythonファイルのショートカットをデスクトップに作成
+for filename in os.listdir(target_folder):
+    if filename.endswith(".py"):
+        source_path = os.path.join(target_folder, filename)
+        create_shortcut(source_path, source_folder)
