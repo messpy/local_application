@@ -1,34 +1,31 @@
-import os
-import shutil
-import winshell
+Set objShell = CreateObject("WScript.Shell")
 
-def create_shortcut(source_path, target_folder):
-    # ショートカットを作成するフォルダが存在しない場合は作成する
-    if not os.path.exists(target_folder):
-        os.makedirs(target_folder)
-    
-    # ショートカットを作成する
-    target_path = os.path.join(target_folder, os.path.basename(source_path) + ".lnk")
-    winshell.CreateShortcut(
-        Path=target_path,
-        Target=source_path,
-        Description="Shortcut to {}".format(os.path.basename(source_path))
-    )
+' Pythonファイルが含まれるフォルダのパス
+strFolderPath = "C:\Path\to\a"
 
-# デスクトップのPythonファイルを "Process" フォルダに移動
-source_folder = os.path.join(os.path.expanduser("~"), "Desktop")
-target_folder = os.path.join(source_folder, "Process")
+' ショートカットの保存先デスクトップフォルダ
+strDesktopPath = objShell.SpecialFolders("Desktop")
 
-if not os.path.exists(target_folder):
-    os.makedirs(target_folder)
+' フォルダ内のPythonファイルに対して処理を行う
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set objFolder = objFSO.GetFolder(strFolderPath)
 
-for filename in os.listdir(source_folder):
-    if filename.endswith(".py"):
-        source_path = os.path.join(source_folder, filename)
-        shutil.move(source_path, target_folder)
+' フォルダ内のファイルに対して処理を行う
+For Each objFile In objFolder.Files
+    ' ファイルがPythonスクリプトの場合のみ処理を行う
+    If LCase(objFSO.GetExtensionName(objFile.Path)) = "py" Then
+        ' ショートカットの保存先
+        strShortcutPath = strDesktopPath & "\" & objFSO.GetBaseName(objFile.Name) & ".lnk"
+        
+        ' ショートカットを作成
+        Set objShortcut = objShell.CreateShortcut(strShortcutPath)
+        objShortcut.TargetPath = objFile.Path
+        objShortcut.Save
+        
+        ' ショートカットの作成を確認するためのメッセージを表示
+        WScript.Echo "ショートカットが作成されました：" & strShortcutPath
+    End If
+Next
 
-# "Process" フォルダに移動したPythonファイルのショートカットをデスクトップに作成
-for filename in os.listdir(target_folder):
-    if filename.endswith(".py"):
-        source_path = os.path.join(target_folder, filename)
-        create_shortcut(source_path, source_folder)
+' 処理完了メッセージを表示
+WScript.Echo "処理が完了しました。"
