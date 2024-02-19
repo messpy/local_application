@@ -1,5 +1,8 @@
 #import pykit_tool
 #pykit_tool.help
+#pykit_tool.send_line(引数)#"mmjcR1plHjBEGizK6p3ZP7rA9hERqz9VwDhfNr1VOKf"
+#pykit_tool.send_discord(引数)"https://discord.com/api/webhooks/1204779730356928572/hHE-CBum_3hynzybh8Mz8Q5LDAg7dNHAS-KtGaqvzvwkoqd9bPgkE282n7C3frtV_X7f"
+
 
 import os
 import logging
@@ -68,7 +71,7 @@ logging.shutdown()
 """
 
 
-def read_json_file(filename, key):
+def get_json(filename="data.json",key="test"):
     with open(filename, 'r') as file:
         data = json.load(file)
         if key in data:
@@ -98,11 +101,6 @@ def select_fld(selection):
         return filedialog.askopenfilename()
     elif selection == "fles":
         return filedialog.askopenfilenames()
-
-
-
-
-
 
 
 
@@ -157,12 +155,21 @@ def ping_test():#回線チェック
     upload_speed = st.upload() / 1024 / 1024  # Mbpsに変換
     ping = st.results.ping
 
+    #Wifi名取得CMD使う
+    print("Wifi名取得中...")
+    try:
+        wifi_name = next((line.split(":")[1].strip() for line in subprocess.run(["netsh", "wlan", "show", "interfaces"], capture_output=True, text=True, check=True).stdout.splitlines() if "SSID" in line), "none")
+    except subprocess.CalledProcessError:
+        wifi_name = "none"
+
+
+
     print("[測定結果]")
-    print("WiFi名:現在未作成")
+    print(f"WiFi名:{wifi_name}")
     print(f"download_speed: {download_speed}Mbps")
     print(f"upload_speed: {upload_speed}Mbps")
     print(f"ping: {ping}ms")
-    return ping
+    return wifi_name,download_speed,upload_speed,ping
 
 
 #音声関連
@@ -248,10 +255,6 @@ def record_audio(flename, duration=5, channels=1, rate=44100, chunk=1024):
 
 
 
-
-
-
-
 """
     outfle = "test.mp3"
     try:
@@ -261,4 +264,4 @@ def record_audio(flename, duration=5, channels=1, rate=44100, chunk=1024):
         print(f"エラー: {e}")
 
 # WAVファイルをMP3形式に変換
-
+"""
