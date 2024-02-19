@@ -1,6 +1,6 @@
 #import pykit_tool
+#pykit_tool.help
 
-import dropbox
 import os
 import logging
 import time
@@ -13,6 +13,13 @@ import speech_recognition as sr
 import pyaudio
 import wave
 import subprocess
+import speedtest 
+import ifcfg
+import os
+import inspect
+import json
+
+
 
 
 def help():
@@ -27,7 +34,7 @@ def help():
         "speech_listen()":"音声をリアルタイムで",
         "record_audio('output.wav', duration=10) ":"10秒間録音する",
         "disk_usage('/')":"HDD容量 usb等は引数に",
-        "":""
+        "ping_test()→ping":""
         
 
 
@@ -37,129 +44,92 @@ def help():
         print(f"[{mykey}] {myvalue}")
 #
 
+#設定関連
+
+def setup_logging(log_file):
+    """ログの設定を行う関数"""
+    logging.basicConfig(filename=log_file, 
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s')
+    print("関数をファイル名を指定して呼び出してください「logging.info()」")
+
+""" カスタムのログレベルを使ってログを記録する
+logging.log(logging.DEBUG, "デバッグ情報です")
+
+try:
+    # 何らかの処理を実行する
+except Exception as e:
+    logging.exception("処理中にエラーが発生しました:")
+
+ プログラムの終了時にロギングシステムをシャットダウンする
+logging.shutdown()
+
+
+"""
+
+
+def read_json_file(filename, key):
+    with open(filename, 'r') as file:
+        data = json.load(file)
+        if key in data:
+            return data[key]
+        else:
+            print(f"Error: Key '{key}' not found in JSON file.")
+            return None
+
+def send_notification(message):
+    notification.notify(
+        title='Notification',
+        message=message,
+    )
+
 
     
-def select_fld():
-    fld_path = filedialog.askdirectory()
-    print(fld_path)
-    return fld_path
-
-def select_fle(extension):
+def select_fld(selection):
+    """指定されたオプションに応じてフォルダまたはファイルを選択する関数を生成する"""
     root = tk.Tk()
     root.withdraw()
-    fTyp = [("データファイル",extension )]
-    fle_path = filedialog.askopenfile(filetypes=fTyp)
-    print(fle_path.name)
 
-    return fle_path.name
-
-
-# logging_utils.py
-
-
-
-def setup_logging(log_file, log_level=logging.INFO):
-    """指定されたログファイルとログレベルでロギングを設定します。"""
-    # ロガーを作成
-    logger = logging.getLogger(__name__)
-    print(logger)
-    logger.setLevel(log_level)
-
-    # 既にハンドラが存在する場合は削除する
-    for handler in logger.handlers[:]:
-        logger.removeHandler(handler)
-
-    # ログフォーマットを設定
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
-    # ファイルハンドラを設定
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(log_level)
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-
-    # コンソールハンドラを設定
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(log_level)
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    if selection == "fld":
+        return filedialog.askdirectory()
+    elif selection == "flds":
+        return filedialog.askdirectoryes()
+    elif selection == "fle":
+        return filedialog.askopenfilename()
+    elif selection == "fles":
+        return filedialog.askopenfilenames()
 
 
 
 
 
-def send_discord(webhook_url, msg,img_path):
-    print("Discodeに送信中")
+
+
+
+
+
+#Python周り関連
+def create_executable(file_name):
+    """指定されたファイル名で pyinstaller を実行し、--onefile オプションを付ける関数"""
     try:
-        with open(img_path, 'rb') as file:
-            files = {'file': file}
-            payload = {'content': msg}
-            response = requests.post(webhook_url, files=files)
-            response.raise_for_status()
-            print("Image sent successfully to Discord!")
-    except FileNotFoundError:
-        print("File not found.")
-    except requests.exceptions.HTTPError as err:
-        print(f"Error sending image to Discord: {err}")
-
-def send_line(token,msg):
-        print("LINEに送信中")
-        url = "https://notify-api.line.me/api/notify"
-        headers = {"Authorization" : "Bearer "+ token}
-        payload = {"message" :  msg}
-        r = requests.post(url, headers = headers, params=payload)
+        subprocess.run(['pyinstaller', '--onefile', file_name])
+        print("実行可能ファイルが作成されました。")
+    except Exception as e:
+        print(f"エラーが発生しました: {e}")
 
 
-
-def send_discord_audio(webhook_url, fle_path):
-    files = {'file': open(fle_path, 'rb')}
-    response = requests.post(webhook_url, files=files)
-    
-    if response.status_code == 200:
-        print('音声ファイルを送信しました。')
-    else:
-        print(f'エラー: {response.status_code}')
+        
 
 
+#内部情報関連
 
-def dropbox_dl(ACCESS_TOKEN):
-    # Dropboxアクセストークンを設定
- 
-    # ダウンロード先のフォルダ
-    DOWNLOAD_DIR = '/home/kent/Remoto/iPhone'
+def batterry():
+    dsk = psutil.disk_usage('/')
+    btr1 = psutil.sensors_battery()
+    print(f"{btr1.percent}%")
 
-    # Dropboxとの接続
-    dbx = dropbox.Dropbox(ACCESS_TOKEN)
-
-    # `raspi`フォルダ内のエントリ一覧を取得
-    entries = dbx.files_list_folder('/Raspi')
-
-    # 各エントリをダウンロード
-    for entry in entries.entries:
-        # ファイルの場合
-        if isinstance(entry, dropbox.files.FileMetadata):
-            # ファイル名
-            filename = entry.name
-
-            # ダウンロードパス
-            download_path = os.path.join(DOWNLOAD_DIR, filename)
-            download_path = DOWNLOAD_DIR.replace('\\', '/') + '/' + filename
-
-
-            # ファイルダウンロード
-            with open(download_path, 'wb') as f:
-                metadata, res = dbx.files_download(entry.path_lower)
-                f.write(res.content)
-                
-
-    # 処理完了
-    print('ダウンロード処理が完了しました。')
-
-
-
-
-
-def disk_usage(path='/'):　# ディスク使用状況を表示
+def disk_usage(): # ディスク使用状況を表示
+    path='/'
     disk_info = psutil.disk_usage(path)
     total = disk_info.total / (1024 ** 3)  # ギガバイト単位に変換
     used = disk_info.used / (1024 ** 3)
@@ -175,20 +145,28 @@ def disk_usage(path='/'):　# ディスク使用状況を表示
     return total,used,free
 
 
+def ping_test():#回線チェック
+ 
+    print("speed test中..")
+    st = speedtest.Speedtest()
+    st.get_best_server()
+    print("計算中...")
+
+    # 速度測定を実行
+    download_speed = st.download() / 1024 / 1024  # Mbpsに変換
+    upload_speed = st.upload() / 1024 / 1024  # Mbpsに変換
+    ping = st.results.ping
+
+    print("[測定結果]")
+    print("WiFi名:現在未作成")
+    print(f"download_speed: {download_speed}Mbps")
+    print(f"upload_speed: {upload_speed}Mbps")
+    print(f"ping: {ping}ms")
+    return ping
 
 
+#音声関連
 
-
-def speak(msg):
-    engine = pyttsx3.init()
-    engine.say(msg)
-    engine.runAndWait()
-    
-
-def batterry():
-    dsk = psutil.disk_usage('/')
-    btr1 = psutil.sensors_battery()
-    print(btr1.percent+"%")
     
 def speech_listen():#pip install SpeechRecognition と　pip install pyaudio
     r = sr.Recognizer()
@@ -222,7 +200,11 @@ def speech_listen():#pip install SpeechRecognition と　pip install pyaudio
     return listentxt
 
         
-
+def speak(msg):
+    engine = pyttsx3.init()
+    engine.say(msg)
+    engine.runAndWait()
+    
 
 def record_audio(flename, duration=5, channels=1, rate=44100, chunk=1024):
     # PyAudioのインスタンスを作成
@@ -264,6 +246,12 @@ def record_audio(flename, duration=5, channels=1, rate=44100, chunk=1024):
     return flename
 
 
+
+
+
+
+
+
 """
     outfle = "test.mp3"
     try:
@@ -273,15 +261,4 @@ def record_audio(flename, duration=5, channels=1, rate=44100, chunk=1024):
         print(f"エラー: {e}")
 
 # WAVファイルをMP3形式に変換
-"""
-
-    
-
-
-
-# 録音時間を指定して録音を実行
-
-
-
-# 関数の呼び出しを行わない
 
