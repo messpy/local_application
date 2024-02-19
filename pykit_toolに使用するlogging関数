@@ -1,0 +1,8 @@
+import logging
+
+def setup_logging(log_file):
+    """ログの設定を行う関数"""
+    logging.basicConfig(filename=log_file, 
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s')
+    print("関数をファイル名を指定して呼び出してください「logging.info()」")
