@@ -21,3 +21,23 @@ for function_name in defined_functions:
     print(f"{function_name}({args})の情報:")
     print(f"- 戻り値: {return_value}")
     print(f"- 説明: {function.__doc__}\n")
+
+
+
+
+
+import json
+
+def read_json_file(filename, key):
+    with open(filename, 'r') as file:
+        data = json.load(file)
+        if key in data:
+            return data[key]
+        else:
+            print(f"Error: Key '{key}' not found in JSON file.")
+            return None
+
+# 使用例
+value = read_json_file('a.json', 'Name')
+if value is not None:
+    print(f"The value of 'Name' key is: {value}")
