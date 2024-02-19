@@ -4,37 +4,40 @@ import json
 
 
 
-
-
-def read_json_file(filename, keyid,keypath):
+def read_json_file(filename, keyid):
     with open(filename, 'r') as file:
         data = json.load(file)
-        if key in data:
-            return data[keyid],data[keypath]
+        if keyid in data:
+            return data[keyid]
         else:
-            print(f"Error: Key '{key}' not found in JSON file.")
+            print(f"Error: Key '{keyid}' not found in JSON file.")
             return None
 
+# JSONファイルからデータを読み込み、"line" キーの値を取得する
 
 
 
 
 
 
+import requests
 
-def send_discord(webhook_url, msg,img_path):
+def send_discord(webhook_url, msg, img_path=""):
     print("Discodeに送信中")
     try:
-        with open(img_path, 'rb') as file:
-            files = {'file': file}
-            payload = {'content': msg}
-            response = requests.post(webhook_url, files=files)
-            response.raise_for_status()
-            print("Image sent successfully to Discord!")
+        files = None
+        if img_path:
+            with open(img_path, 'rb') as file:
+                files = {'file': file}
+        payload = {'content': msg}
+        response = requests.post(webhook_url, files=files, data=payload)
+        response.raise_for_status()
+        print("Message sent successfully to Discord!")
     except FileNotFoundError:
         print("File not found.")
     except requests.exceptions.HTTPError as err:
-        print(f"Error sending image to Discord: {err}")
+        print(f"Error sending message to Discord: {err}")
+
 
 def send_line(token,msg):
         print("LINEに送信中")
@@ -55,7 +58,22 @@ def send_discord_audio(webhook_url, fle_path):
         print(f'エラー: {response.status_code}')
 
 
+msg = "hello~test"
+json_fle = "data.json"
+line_id = read_json_file(json_fle, "line")
+send_line(line_id,msg)
 
+discord_id = read_json_file(json_fle, "discord")
+send_discord(discord_id,msg)
+
+
+
+
+
+
+
+
+"""
 def dropbox_dl(ACCESS_TOKEN):
     # Dropboxアクセストークンを設定
  
@@ -89,4 +107,4 @@ def dropbox_dl(ACCESS_TOKEN):
     # 処理完了
     print('ダウンロード処理が完了しました。')
 
-
+"""
