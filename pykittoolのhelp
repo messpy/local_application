@@ -25,7 +25,7 @@ for function_name in defined_functions:
 
 
 
-
+#json
 import json
 
 def read_json_file(filename, key):
@@ -41,3 +41,17 @@ def read_json_file(filename, key):
 value = read_json_file('a.json', 'Name')
 if value is not None:
     print(f"The value of 'Name' key is: {value}")
+
+通知
+def send_notification(message):
+    notification.notify(
+        title='Notification',
+        message=message,
+    )
+
+
+
+
+
+
+
