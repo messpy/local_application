@@ -4,23 +4,18 @@ import json
 
 
 
-def read_json_file(filename, keyid):
+def get_json(filename="data.json",key="test"):
     with open(filename, 'r') as file:
         data = json.load(file)
-        if keyid in data:
-            return data[keyid]
+        if key in data:
+            return data[key]
         else:
-            print(f"Error: Key '{keyid}' not found in JSON file.")
+            print(f"Error: Key '{key}' not found in JSON file.")
             return None
 
-# JSONファイルからデータを読み込み、"line" キーの値を取得する
 
 
 
-
-
-
-import requests
 
 def send_discord(webhook_url, msg, img_path=""):
     print("Discodeに送信中")
@@ -58,6 +53,8 @@ def send_discord_audio(webhook_url, fle_path):
         print(f'エラー: {response.status_code}')
 
 
+"""
+
 msg = "hello~test"
 json_fle = "data.json"
 line_id = read_json_file(json_fle, "line")
@@ -65,7 +62,7 @@ send_line(line_id,msg)
 
 discord_id = read_json_file(json_fle, "discord")
 send_discord(discord_id,msg)
-
+"""
 
 
 
