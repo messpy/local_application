@@ -1,0 +1,23 @@
+import os
+import inspect
+
+def a():
+    """関数aの説明"""
+    a = b
+
+def b(t):
+    """関数bの説明"""
+    c = t
+    return c
+
+# 定義されている関数の一覧を取得
+defined_functions = [function_name for function_name in dir() if callable(eval(function_name)) and function_name != 'os']
+
+# 関数ごとに情報を表示
+for function_name in defined_functions:
+    function = eval(function_name)
+    args = inspect.getfullargspec(function).args
+    return_value = function() if len(args) == 0 else function(args[0])
+    print(f"{function_name}({args})の情報:")
+    print(f"- 戻り値: {return_value}")
+    print(f"- 説明: {function.__doc__}\n")
