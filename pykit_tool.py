@@ -21,7 +21,7 @@ import ifcfg
 import os
 import inspect
 import json
-
+from datetime import datetime
 
 def help():
     mydict = {
@@ -69,6 +69,16 @@ logging.shutdown()
 
 
 """
+def nowname():
+    # 現在の日付と時間を取得
+    now = datetime.now()
+
+    # 年の部分を取得
+    nowtime = now.strftime("%Y%m%d_%H%M_%S")
+
+    # 結果を出力
+    print(nowtime)
+    return nowtime
 
 
 def get_json(filename="data.json", key="test"):
