@@ -16,22 +16,23 @@ def get_json(filename="data.json",key="test"):
 
 
 
-
-def send_discord(webhook_url, msg, img_path=""):
+def send_discord(webhook_url,msg, image_path="" ):
     print("Discodeに送信中")
     try:
-        files = None
-        if img_path:
-            with open(img_path, 'rb') as file:
-                files = {'file': file}
-        payload = {'content': msg}
-        response = requests.post(webhook_url, files=files, data=payload)
-        response.raise_for_status()
-        print("Message sent successfully to Discord!")
+        with open(image_path, 'rb') as image_file:
+            payload = {
+                "content": msg,
+                "file": image_file
+            }
+            response = requests.post(webhook_url, files=payload)
+            response.raise_for_status()
+            print("Image sent successfully")
     except FileNotFoundError:
         print("File not found.")
-    except requests.exceptions.HTTPError as err:
-        print(f"Error sending message to Discord: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error sending image via : {err}")
+
+
 
 
 def send_line(token,msg):
