@@ -1,21 +1,17 @@
+# a.py
+
+import asyncio
 import subprocess
-import time
+import os
 
-def start_teraterm(port):
-    # TERATERMの実行
-    process = subprocess.Popen(['teraterm', '/C=1', '/BAUD=115200', f'/P={port}'])
+async def a():
+    # a.pyの非同期処理のコード
 
-    # ポートがオープンするまで待機
-    time.sleep(5)  # 適切な待機時間を設定
+async def main():
+    while True:
+        await asyncio.sleep(1)  # メインの非同期処理がブロックされないようにするための適当な待ち処理
+        if not os.path.exists("b_process.pid"):  # プロセスがまだ実行されていない場合
+            with open("b_process.pid", "w") as f:
+                subprocess.Popen(["python", "b.py"], stdout=f, stderr=f)  # 別のプロセスでb.pyを実行し、プロセスIDをファイルに書き込む
 
-    # コマンドを送信
-    send_command(process, 'your_command_here')
-
-def send_command(process, command):
-    # コマンドの送信
-    process.stdin.write(f"{command}\n")
-    process.stdin.flush()
-
-if __name__ == "__main__":
-    port_number = "COM1"  # 利用するシリアルポートを指定
-    start_teraterm(port_number)
+asyncio.run(main())
