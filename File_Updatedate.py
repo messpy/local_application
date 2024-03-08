@@ -4,10 +4,18 @@ import win32_setctime
 from tkinter import filedialog
 import random
 
-x = random.randint(3,29)
-t = random.randint(10,17)
-b = random.randint(1,5)
-c = random.randint(6,7)
+
+def ran(s,g):
+    da = random.randint(3,29)
+    retern da
+    
+y = ran(2024,2024)
+m = ran(1995,2024)
+d = ran(1,30)
+h = ran(9,18)
+mm = ran(0,59)
+
+print(y,m,d,h,mm)
 
 
 dir = "C:\pg"
@@ -18,15 +26,12 @@ print(files)
 # （フォルダならフォルダパスを指定します）
 
 
-m = c
-d = x
-h = t
 
 now = datetime.datetime.now()
 for file  in files:
     # (2/3) 作成日時、更新日時、アクセス日時を決めます。
-    ctime = datetime.datetime(2022, m, d - b, h, 12, 13).timestamp()
-    mtime = datetime.datetime(2022, m, d, h, 15, 16).timestamp()
+    ctime = datetime.datetime(y, m, d, h, h, mm).timestamp()
+    mtime = datetime.datetime(y, m, d, h, h, mm).timestamp()
     atime = now.timestamp()
 
     # (3/3) タイムスタンプを変更します。
