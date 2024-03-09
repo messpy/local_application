@@ -16,8 +16,8 @@ import speech_recognition as sr
 import pyaudio
 import wave
 import subprocess
-import speedtest
-import ifcfg
+
+#import ifcfg
 import os
 import inspect
 import json
@@ -97,7 +97,6 @@ def send_notification(message):
         message=message,
     )
 
-
 def countdown(timer):
     while timer > 0:
         print(f"{str(timer)}秒")
@@ -135,8 +134,10 @@ def create_executable(file_name):
 
 def batterry():
     dsk = psutil.disk_usage('/')
-    btr1 = psutil.sensors_battery()
-    print(f"{btr1.percent}%")
+    btr = psutil.sensors_battery()
+    btr = f"{btr.percent}%"
+    print(btr)
+    return btr
 
 
 def disk_usage():  # ディスク使用状況を表示
@@ -157,7 +158,7 @@ def disk_usage():  # ディスク使用状況を表示
 
 
 def ping_test():  # 回線チェック
-
+    import speedtest
     print("speed test中..")
     st = speedtest.Speedtest()
     st.get_best_server()

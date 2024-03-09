@@ -1,165 +1,95 @@
-from pystray import Icon,MenuItem, Menu
-from PIL import Image
-import time
-import threading
-import schedule
-from ast import fix_missing_locations
+import logging
+import PySimpleGUI as sg
 import pyautogui
-import os
 import time
-import datetime
-import win32com.client as wincl
-import tkinter as tk
-from tkinter import messagebox
-import sys
-import winsound
 from plyer import notification
-import configparser
-import requests
-
-class taskTray:
-    def __init__(self, image):
-        self.status = False
-
-        # アイコンの画像
-        image = Image.open(image)
-        # 右クリックで表示されるメニュー
-        menu = Menu(
-            MenuItem('Task', self.doTask),
-            MenuItem('Exit', self.stopProgram),
-        )
-
-        self.icon = Icon(name='nameTray', title='Shutdown Program',
-                         icon=image, menu=menu)
-
-    def doTask(self):
-        print('実行しました。')
+from module import ActiveWindows
+from module import pykit_tool 
+from module import pysns_tool
 
 
-        def line(me):
-            url = "https://notify-api.line.me/api/notify"
-            token = "mmjcR1plHjBEGizK6p3ZP7rA9hERqz9VwDhfNr1VOKf"
-            headers = {"Authorization" : "Bearer "+ token}
-            message =  me
-            payload = {"message" :  message}
-            r = requests.post(url, headers = headers, params=payload)
+class Shutdown:
+    def __init__(self):
+        self.position = []
 
-        # -------------------ini setting------------------------------
-        inipass = r"C:\Users\kent\Desktop\time_setting.ini"
-        ini_name = ""
-        config = configparser.ConfigParser()
-        config.read(inipass + ini_name)
-        timer = config["BASE"]["time"]
-        timer2 = config["BASE"]["limit"]
-        # iniと同じフォルダにすること
-        Fmini = int(timer)  # 分設定
-        Smini = int(timer2)   # 分設定
-
-        Ftime = 60 * Fmini  # 時間設定
-        Stime = 60 * Smini  # 2回目の時間設定
-        # -----------------各種設定-----------------------------------------
-        line("起動")
-        dt_now = datetime.datetime.now()  # 現在時刻
-        dt2 = dt_now + datetime.timedelta(minutes=Fmini + Smini)  # 現在時刻に時間を足す
+    def set_sht_limit(self, sht_limit):
+        self.sht_limit = sht_limit * 60
+        
 
 
-        def nofi(time):  # シャットダウン通知
-            notification.notify(
-                title="あと" + time + "分でシャットダウンします",
-                message="予定時刻：" + str(dt2) + "分",
-                app_name="アプリの名前",
-                # pp_icon="python.ico",
-                timeout=5)
+    def set_gui(self):
+        # GUIのレイアウトとウィジェットを定義
+        layout = [[sg.Text(self.sht_limit, key='time')],
+                  [sg.InputText(key='-Input-', size=3), sg.Button('分')]]
+        
+        window = sg.Window('Shutdown Timer',
+                            layout,size=(90,70),
+                            location=(1270,660),
+                            no_titlebar=True,
+                            alpha_channel=0.8,
+                            grab_anywhere=True,
+                           
+        right_click_menu=['Unused', ['ActiveON', 'ActiveOFF','!&Click', 'Exit',]],right_click_menu_text_color='green')
+        # イベントループ
+        while True:
+            event, values = window.read(timeout=1000)
+            if event == sg.WIN_CLOSED or event == 'Exit':
+                break
+            elif event == sg.WIN_CLOSED or event == 'ActiveON':
+                ActiveWindows.activewindow(0)
+            elif event == sg.WIN_CLOSED or event == 'ActiveOFF':
+                ActiveWindows.activewindow(1)
 
+            # 時間を更新
+            self.sht_limit -= 1
+            warntime = 60
+            #残り60秒なら通知
+            if self.sht_limit == warntime:
+                pykit_tool.send_notification(f"残り{warntime}秒です")
+            m, s = divmod(self.sht_limit, 60)
+            window['time'].update(f"{m}分{s}秒")
 
-        def nowtime(f):
-            dt_now = datetime.datetime.now()
-            print(f, str(dt_now.strftime('%H:%M:%S')))
+            # マウス位置を取得
+            position = pyautogui.position()
 
+            # マウス位置が変化したら時間をリセット
+            if position not in self.position:
+                self.position.append(position)
+                self.set_sht_limit(30)
 
-        # -----------------プログラム-----------------------------------------
-        print("スタート\n1回目", Fmini, "分\n2回目", Smini, "分")
-        print(ini_name, "を", inipass, "フォルダにしてください")
-        nowtime("開始時刻：")
-        notification.notify(
-            title="START",
-            message="1回目:" + str(Fmini) + "分\n2回目:" + str(Smini) + "分",
-            app_name="アプリの名前",
-            # pp_icon="python.ico",
-            timeout=10)
+            # 入力された時間を読み込み、カウントダウンを開始
+            if event == '分':
+                try:
+                    sht_limit = int(values['-Input-'])
+                    self.set_sht_limit(sht_limit)
+                except ValueError:
+                    pass
 
-        # -----------------メインウィンドウ-----------------------------------------
+        window.close()
 
-
-        for i in range(0, 100, 1):
-            print("-----------------------------------------------------------------")
-            fi = pyautogui.position()  # 定位置
-            print(fi)
-            nowtime("更新時刻：")
-            time.sleep(Ftime)  # 待機時間----------------
-            fi2 = pyautogui.position()  # 定位置
-            if fi == fi2:
-                print("--------------------1度目の静止状態-------------------------")
-                nowtime("更新時刻：")
-
-
-                nofi(str(Smini))
-
-                time.sleep(Stime)  # 待機時間---------------
-                print("---------------2度目の静止状態------------------------------")
-                nowtime("15秒後にシャットダウンされます：")
-                winsound.Beep(523, 900)
-                time.sleep(15)
-                fi3 = pyautogui.position()  # 定位置
-
-                if fi2 == fi3:
-                    print("---------------シャットダウン状態------------------------------")
-                    line("シャットダウン")
-                    nowtime("シャットダウン時刻:")
-                    winsound.Beep(523, 900)
-                    os.system('shutdown -s')
-
-            else:
-                print("-------------------更新されました--------------------------")
-                notification.notify(
-                    title="更新されます",
-                    message="次回" + str(dt2) + "更新",
-                    app_name="アプリの名前",
-                    # pp_icon="python.ico",
-                    timeout=10)
-
-
-        # -----------------関数設定-----------------------------------------
-
-
-
-
-
-    def runSchedule(self):
-        # 5秒毎にタスクを実行する。
-        schedule.every(5).seconds.do(self.doTask)
-        # status が True である間実行する。
-        while self.status:
-            schedule.run_pending()
+    def count_time(self):
+        # 時間経過処理
+        while self.sht_limit > 0:
             time.sleep(1)
+            self.sht_limit -= 1
 
-    def stopProgram(self, icon):
-        self.status = False
+        # 時間切れ処理
+        print('時間切れです!')
 
-        # 停止
-        self.icon.stop()
 
-    def runProgram(self):
-        self.status = True
-
-        # スケジュールの実行
-        task_thread = threading.Thread(target=self.runSchedule)
-        task_thread.start()
-
-        # 実行
-        self.icon.run()
+def sendlog(msg):
+    line = pysns_tool.get_json(key="line")
+    btr = pykit_tool.batterry()
+    txt = f"{btr} {msg}"
+    logging.info(txt)
+    pysns_tool.send_line(line,txt)
 
 
 if __name__ == '__main__':
-    system_tray = taskTray(image=r"C:\Users\kent\Desktop\各ファイル\jpeg\sample.jpeg")
-    system_tray.runProgram()
+    pykit_tool.setup_logging(r"media\job.log")
+    sendlog("起動")
+    shutdown = Shutdown()
+    shutdown.set_sht_limit(30)
+    shutdown.set_gui()
+    shutdown.count_time()
+    sendlog("終了")

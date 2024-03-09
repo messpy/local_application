@@ -1,10 +1,9 @@
-import dropbox
 import requests
 import json
 
 
 
-def get_json(filename="data.json",key="test"):
+def get_json(filename=r"C:\Users\kent\Desktop\data.json",key="test"):
     with open(filename, 'r') as file:
         data = json.load(file)
         if key in data:
