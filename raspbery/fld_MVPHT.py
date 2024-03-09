@@ -51,9 +51,9 @@ def watch_folder(source_folder, destination_folder):
         time.sleep(5)
 
 # 監視するフォルダと移動先のフォルダを指定
-source_folder = pysns_tool.getjson("iPhonefld")
-destination_folder = pysns_tool.getjson("savefld")
-pykit_tool.setup_logging("log/iPFle1.log")
+source_folder = "media/iPhonefld"
+destination_folder = "media/savefld"
+pykit_tool.setup_logging("/home/kent/Remote/log/backup.log")
 while True:
         
     # フォルダを監視し、ファイルが追加されたら移動する
@@ -66,7 +66,7 @@ while True:
     extension = "" if last_dot_index == -1 else fle[last_dot_index + 1:]
     print(extension)
     if extension != "heic":        
-        getjson = pysns_tool.getjson("discord")
+        getjson = pysns_tool.get_json(key="discord")
         pysns_tool.send_discord(getjson,"",destination_folder + "/" + fle)
     print("fle情報書き込み")
     txt = f"{destination_folder}:{fle}"
