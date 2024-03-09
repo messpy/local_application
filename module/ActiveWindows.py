@@ -1,7 +1,11 @@
 import win32gui
 import win32con
 import time
+
+
 def activewindow(active):
+    
+    time.sleep(2)
     windowname = win32gui.GetWindowText(win32gui.GetForegroundWindow())
     winnum = win32gui.FindWindow(None, windowname)
     if active == 0:
@@ -14,5 +18,5 @@ def activewindow(active):
 
 if __name__=="__main__":
     offon = int(input("0=ActiveON\n1=AvtiveOFF\n選んでください:"))
-    time.sleep(2)
+    
     activewindow(offon)
