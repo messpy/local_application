@@ -1,3 +1,4 @@
+import os
 import logging
 import PySimpleGUI as sg
 import pyautogui
@@ -7,9 +8,16 @@ from module import ActiveWindows
 from module import pykit_tool 
 from module import pysns_tool
 
-
+def sendlog(msg):
+    line = pysns_tool.get_json(key="line")
+    btr = pykit_tool.batterry()
+    txt = f"{btr} {msg}"
+    logging.info(txt)
+    pysns_tool.send_line(line,txt)
+    
 class Shutdown:
     def __init__(self):
+        self.set_timer = 60
         self.position = []
 
     def set_sht_limit(self, sht_limit):
@@ -46,6 +54,8 @@ class Shutdown:
             #残り60秒なら通知
             if self.sht_limit == warntime:
                 pykit_tool.send_notification(f"残り{warntime}秒です")
+            elif self.sht_limit == 0:
+                break
             m, s = divmod(self.sht_limit, 60)
             window['time'].update(f"{m}分{s}秒")
 
@@ -55,7 +65,7 @@ class Shutdown:
             # マウス位置が変化したら時間をリセット
             if position not in self.position:
                 self.position.append(position)
-                self.set_sht_limit(30)
+                self.set_sht_limit(self.set_timer)
 
             # 入力された時間を読み込み、カウントダウンを開始
             if event == '分':
@@ -76,20 +86,16 @@ class Shutdown:
         # 時間切れ処理
         print('時間切れです!')
 
-
-def sendlog(msg):
-    line = pysns_tool.get_json(key="line")
-    btr = pykit_tool.batterry()
-    txt = f"{btr} {msg}"
-    logging.info(txt)
-    pysns_tool.send_line(line,txt)
+    
 
 
 if __name__ == '__main__':
     pykit_tool.setup_logging(r"media\job.log")
     sendlog("起動")
     shutdown = Shutdown()
-    shutdown.set_sht_limit(30)
+    shutdown.set_sht_limit(60)
     shutdown.set_gui()
     shutdown.count_time()
     sendlog("終了")
+    os.system('shutdown -s')
+    

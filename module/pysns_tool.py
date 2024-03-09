@@ -13,8 +13,6 @@ def get_json(filename=r"C:\Users\kent\Desktop\data.json",key="test"):
             return None
 
 
-
-
 def send_discord(webhook_url,msg, image_path="" ):
     print("Discodeに送信中")
     try:

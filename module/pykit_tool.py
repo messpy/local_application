@@ -16,7 +16,6 @@ import speech_recognition as sr
 import pyaudio
 import wave
 import subprocess
-
 #import ifcfg
 import os
 import inspect
@@ -92,6 +91,7 @@ def get_json(filename="data.json", key="test"):
 
 
 def send_notification(message):
+    from plyer import notification
     notification.notify(
         title='Notification',
         message=message,
