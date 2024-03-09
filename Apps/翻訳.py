@@ -1,7 +1,7 @@
 from googletrans import Translator
 
 # 翻訳したいテキスト
-text = "Hello, World!"
+text = input("翻訳[en-jp]:")
 
 # 翻訳先の言語コード
 to_lang = "ja"
