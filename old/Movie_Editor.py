@@ -4,7 +4,7 @@ from PIL import Image
 from time import sleep
 
 
-path = "/home/kent/ダウンロード/movie_edit/RPR.mp4"
+path = "/home/user/ダウンロード/movie_edit/RPR.mp4"
 cap = cv2.VideoCapture(path)
 
 i = 1
@@ -25,7 +25,7 @@ while True:
         break
 
     #speed_number = toriming_data.image_to_string(
-    #toriming_data.open("/home/kent/ダウンロード/movie_edit/Routput.png")lang="eng")
+    #toriming_data.open("/home/user/ダウンロード/movie_edit/Routput.png")lang="eng")
     #print(speed_number)
 
  #   if ret == False:
