@@ -1,46 +1,16 @@
-from logging import root
-from turtle import width
 from googletrans import Translator
-import tkinter as tk
-import win32com.client as wincl
 
+# 翻訳したいテキスト
+text = "Hello, World!"
 
-def key_event(e):
-    print(e.keysym)
+# 翻訳先の言語コード
+to_lang = "ja"
 
-    root.bind("<KeyPress>", key_event)
+# Translatorインスタンスを作成
+translator = Translator()
 
-# 翻訳ボタン
+# 翻訳を実行
+translation = translator.translate(text, dest=to_lang)
 
-
-def trans():
-    excenge = txt.get()
-    tr = Translator()
-    result = tr.translate(excenge, src="en", dest="ja").text
-    print(result)
-    tran = tk.Label(text="訳:"+result)
-    tran.place(x=20, y=80)
-
-    voice = wincl.Dispatch("SAPI.SpVoice")
-    voice.Volume = 30  # [0 to 100]
-    voice.Rate = 0  # [-10 to 10]
-    voice.Speak(excenge + "")
-
-
-tki = tk.Tk()
-tki.title("翻訳")
-tki.attributes("-topmost", True)
-tki.geometry("200x100+0+0")
-
-
-transf = tk.Label(text="英語をを入力")
-transf.place(x=20, y=10)
-
-txt = tk.Entry(width=20)
-txt.place(x=20, y=40)
-
-push = tk.Button(tki, text="決定", command=trans)
-push.place(x=160, y=35)
-
-
-tki.mainloop()
+# 翻訳結果を出力
+print(translation.text)
