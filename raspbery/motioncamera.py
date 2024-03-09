@@ -50,7 +50,8 @@ while True:
     motion()
     nowtime = pykit_tool.nowname()
     fle = raspi_cameratool.normal(str(nowtime))
-    pysns_tool.send_discord("https://discord.com/api/webhooks/1204779730356928572/hHE-CBum_3hynzybh8Mz8Q5LDAg7dNHAS-KtGaqvzvwkoqd9bPgkE282n7C3frtV_X7f","sample", fle)
+    dis = pysns_tool.get_json("data.json","discord")
+    pysns_tool.send_discord(dis,"sample", fle)
     
     
     pykit_tool.countdown(10)

@@ -3,9 +3,9 @@ import json
 
 
 
-def get_json(filename=r"C:\Users\kent\Desktop\data.json",key="test"):
-    with open(filename, 'r') as file:
-        data = json.load(file)
+def get_json(fle=r"C:\Users\kent\Desktop\data.json",key="test"):
+    with open(fle, 'r') as fle:
+        data = json.load(fle)
         if key in data:
             return data[key]
         else:
