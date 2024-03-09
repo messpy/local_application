@@ -26,6 +26,7 @@ class Shutdown:
 
 
     def set_gui(self):
+        sg.theme("DarkBlue")
         # GUIのレイアウトとウィジェットを定義
         layout = [[sg.Text(self.sht_limit, key='time')],
                   [sg.InputText(key='-Input-', size=3), sg.Button('分')]]
@@ -36,6 +37,7 @@ class Shutdown:
                             no_titlebar=True,
                             alpha_channel=0.8,
                             grab_anywhere=True,
+                            keep_on_top=True,
                            
         right_click_menu=['Unused', ['ActiveON', 'ActiveOFF','!&Click', 'Exit',]],right_click_menu_text_color='green')
         # イベントループ
