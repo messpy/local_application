@@ -1,7 +1,5 @@
 #import pykit_tool
 # pykit_tool.help
-# pykit_tool.send_line(引数)#"mmjcR1plHjBEGizK6p3ZP7rA9hERqz9VwDhfNr1VOKf"
-# pykit_tool.send_discord(引数)"https://discord.com/api/webhooks/1204779730356928572/hHE-CBum_3hynzybh8Mz8Q5LDAg7dNHAS-KtGaqvzvwkoqd9bPgkE282n7C3frtV_X7f"
 
 
 import os
@@ -11,9 +9,9 @@ import tkinter as tk
 from tkinter import filedialog
 import requests
 import psutil
-import pyttsx3
-import speech_recognition as sr
-import pyaudio
+
+
+
 import wave
 import subprocess
 #import ifcfg
@@ -191,6 +189,7 @@ def ping_test():  # 回線チェック
 
 
 def speech_listen():  # pip install SpeechRecognition と　pip install pyaudio
+    import speech_recognition as sr
     r = sr.Recognizer()
     mic = sr.Microphone()
 
@@ -222,12 +221,14 @@ def speech_listen():  # pip install SpeechRecognition と　pip install pyaudio
 
 
 def speak(msg):
+    import pyttsx3
     engine = pyttsx3.init()
     engine.say(msg)
     engine.runAndWait()
 
 
 def record_audio(flename, duration=5, channels=1, rate=44100, chunk=1024):
+    import pyaudio
     # PyAudioのインスタンスを作成
     audio = pyaudio.PyAudio()
 
