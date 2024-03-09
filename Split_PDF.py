@@ -1,25 +1,53 @@
-try:
-    import PyPDF2
-    import os
-    from tkinter import filedialog
+import PyPDF2
+import os
 
+# 処理対象のPDFファイルパス
+input_dir = "./input"
 
-        
-    org_fileName = filedialog.askopenfilename()  # 分割したいファイルのファイル名
-    pdf = r"C:\Users\910143\Desktop\PDF"
-    new_fileName = pdf+ "\\あ" + os.path.splitext(os.path.basename(org_fileName))[0] # 分割後のファイル名
+# 出力ディレクトリ
+output_dir = "./output"
 
+# 出力ファイル名フォーマット
+output_filename_format = "{name}_{page:03d}.pdf"
 
-    def splitPDF(src_path, new_basepath):
-        org_pdf = PyPDF2.PdfFileReader(src_path)
-        for i in range(org_pdf.numPages):
-            new_pdf = PyPDF2.PdfFileWriter()
-            new_pdf.addPage(org_pdf.getPage(i))
-            i = '{0:02}'.format(i)
-            with open('{}_{}.pdf'.format(new_basepath, i), 'wb') as f:
-                new_pdf.write(f)
+# 入力ディレクトリ内のPDFファイル一覧を取得
+files = os.listdir(input_dir)
 
-    splitPDF(org_fileName, new_fileName)
-except Exception as e:
-    print(e)
-    input("")
+# 各ファイルに対して処理を行う
+for file in files:
+  # 入力ファイルパス
+  input_filepath = os.path.join(input_dir, file)
+
+  # 出力ファイル名
+  output_filename = output_filename_format.format(
+      name=os.path.splitext(file)[0],
+      page=1,
+  )
+
+  # PDFリーダーオブジェクトを作成
+  reader = PyPDF2.PdfReader(input_filepath)
+
+  # ページ数
+  num_pages = reader.numPages
+
+  # 各ページを分割して保存
+  for page_num in range(num_pages):
+    # 出力ファイルパス
+    output_filepath = os.path.join(output_dir, output_filename)
+
+    # PDFライターオブジェクトを作成
+    writer = PyPDF2.PdfWriter()
+
+    # 現在のページを追加
+    writer.addPage(reader.getPage(page_num))
+
+    # PDFファイルを保存
+    with open(output_filepath, "wb") as f:
+      writer.write(f)
+
+    # 出力ファイル名
+    output_filename = output_filename_format.format(
+        name=os.path.splitext(file)[0],
+        page=page_num + 1,
+    )
+
