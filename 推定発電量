@@ -23,15 +23,15 @@ def calculate_estimated_energy(slope_irradiance, temperature):
     return slope_irradiance * K * (1 + a * (temperature - 25)) * P / 1000
 
 # 測定データのファイル名
-measured_data_file = '測定データ.csv'
+measured_data_file = '測定.csv'
 
 # 結果をCSVファイルに出力
-with open('推定発電量_行ごと.csv', 'w', newline='') as csvfile:
+with open('推定発電量_行ごと.csv', 'w', newline='',encoding='shift_jis') as csvfile:
     fieldnames = ['日時', '推定発電量']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
     
-    with open(measured_data_file, newline='', encoding='utf-8') as csvfile:
+    with open(measured_data_file, newline='', encoding='shift_jis') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             date_str = row['日時']
