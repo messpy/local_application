@@ -1,0 +1,47 @@
+import csv
+import math
+from datetime import datetime, timedelta
+
+# パラメータ
+power_rating = 33.65
+efficiency_factor = 0.85
+temperature_coefficient = -0.004
+
+# 測定データのファイル名
+measured_data_file = '測定データ.csv'
+
+# 日時の範囲（30分ごと）
+start_time = datetime(2023, 10, 1, 7, 0)
+end_time = start_time + timedelta(hours=24)
+
+# 結果をCSVファイルに出力
+with open('推定発電量_30分ごと.csv', 'w', newline='') as csvfile:
+    fieldnames = ['日時', '推定発電量']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    
+    current_time = start_time
+    with open(measured_data_file, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if current_time >= end_time:
+                break
+            measured_irradiance = float(row['水平面日射量'])
+            temperature = float(row['気温'])
+            scattered_irradiance = float(row['水平面分散日射量'])
+            direct_irradiance = float(row['法線面直達日射量'])
+            
+            # 直散分離なしの場合の斜面日射量
+            if direct_irradiance == 0:
+                slope_irradiance = scattered_irradiance
+            else:
+                slope_irradiance = direct_irradiance * math.sin(math.radians(10)) + scattered_irradiance
+            
+            # 推定発電量の計算
+            estimated_energy = slope_irradiance * efficiency_factor * (1 + temperature_coefficient * (temperature - 25)) * power_rating / 1000
+            
+            # 結果をCSVに書き込む
+            writer.writerow({'日時': current_time.strftime('%Y/%m/%d %H:%M'), '推定発電量': estimated_energy})
+            
+            # 30分後の日時に更新
+            current_time += timedelta(minutes=30)
