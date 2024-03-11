@@ -7,14 +7,14 @@ import glob
 args = sys.argv
 # mixerモジュールの初期化
 pygame.mixer.init()
-
+fld = "/home/kent/Remote/media/Audio/"
 if len(args) > 1:
-    argument = args[1] + ".mp3"
+    argument = fld + args[1] + ".mp3"
     print(argument)
     # 音楽ファイルの読み込み
     pygame.mixer.music.load(argument)
 else:
-    musics = glob.glob("*.mp3")
+    musics = glob.glob(fld + "*.mp3")
     for music in musics:
         print(music)
         pygame.mixer.music.load(music)

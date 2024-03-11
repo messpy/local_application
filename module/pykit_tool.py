@@ -3,22 +3,18 @@
 
 
 import os
-import logging
 import time
+from datetime import datetime
+import logging
 import tkinter as tk
 from tkinter import filedialog
 import requests
-import psutil
-
-
-
 import wave
 import subprocess
 #import ifcfg
-import os
 import inspect
 import json
-from datetime import datetime
+
 
 def help():
     mydict = {
@@ -88,12 +84,7 @@ def get_json(filename="data.json", key="test"):
             return None
 
 
-def send_notification(message):
-    from plyer import notification
-    notification.notify(
-        title='Notification',
-        message=message,
-    )
+
 
 def countdown(timer):
     while timer > 0:
@@ -130,7 +121,8 @@ def create_executable(file_name):
 
 # 内部情報関連
 
-def batterry():
+def batterry():#バッテリ残量を表示
+    import psutil
     dsk = psutil.disk_usage('/')
     btr = psutil.sensors_battery()
     btr = f"{btr.percent}%"
@@ -139,6 +131,7 @@ def batterry():
 
 
 def disk_usage():  # ディスク使用状況を表示
+    import psutil
     path = '/'
     disk_info = psutil.disk_usage(path)
     total = disk_info.total / (1024 ** 3)  # ギガバイト単位に変換

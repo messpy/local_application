@@ -9,7 +9,7 @@ from module import pykit_tool
 from module import pysns_tool
 
 def sendlog(msg):
-    line = pysns_tool.get_json(key="line")
+    line = pysns_tool.get_json(fle=r"C:\Users\kent\Desktop\data.json",key="line")
     btr = pykit_tool.batterry()
     txt = f"{btr} {msg}"
     logging.info(txt)
@@ -55,7 +55,7 @@ class Shutdown:
             warntime = 60
             #残り60秒なら通知
             if self.sht_limit == warntime:
-                pykit_tool.send_notification(f"残り{warntime}秒です")
+                ActiveWindows.notification("ActiveWindow",f"残り{warntime}秒です")
             elif self.sht_limit == 0:
                 break
             m, s = divmod(self.sht_limit, 60)

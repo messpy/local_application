@@ -3,20 +3,39 @@ import win32con
 import time
 
 
-def activewindow(active):
+
+def notification(titlemsg,message):
+    from plyer import notification
+    notification.notify(
+        title=titlemsg,
+        message=message,
+    )
     
+def activewindow(wm=0):
+    modify = ""
     time.sleep(2)
-    windowname = win32gui.GetWindowText(win32gui.GetForegroundWindow())
-    winnum = win32gui.FindWindow(None, windowname)
-    if active == 0:
-        win32gui.SetWindowPos(winnum, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-        print(f"{windowname}\n\nActiveON")
-    elif active == 1:
-        win32gui.SetWindowPos(winnum, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-        print(f"{windowname}\n\nActiveOFF")
+    #Avtivename
+    active_hwnd = win32gui.GetWindowText(win32gui.GetForegroundWindow())
+    #ActiveNumber
+    hwnd = win32gui.FindWindow(None, active_hwnd)
+    #wm = win32gui.GetForegroundWindow() ==  hwnd
     
 
-if __name__=="__main__":
-    offon = int(input("0=ActiveON\n1=AvtiveOFF\n選んでください:"))
+    if wm == 0:
+        win32gui.SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+        modify = "ActiveOFF"
+    elif wm == 1:
+        win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+        modify = "ActiveON"
+        
+
+    print(modify)
+    notification(modify,f"{active_hwnd}")
+
     
-    activewindow(offon)
+if __name__=="__main__":
+    x = int(input("ActiveON=1\nActiveOFF=0\nActive?:"))
+
+    active_hwnd = activewindow(x)
+
+    

@@ -3,7 +3,7 @@ import json
 
 
 
-def get_json(fle=r"C:\Users\kent\Desktop\data.json",key="test"):
+def get_json(fle,key="test"):
     with open(fle, 'r') as fle:
         data = json.load(fle)
         if key in data:
@@ -13,8 +13,9 @@ def get_json(fle=r"C:\Users\kent\Desktop\data.json",key="test"):
             return None
 
 
-def send_discord(webhook_url,msg, image_path="" ):
+def send_discord(webhook_url, image_path="" ):
     print("Discodeに送信中")
+    msg = "None"
     try:
         with open(image_path, 'rb') as image_file:
             payload = {
