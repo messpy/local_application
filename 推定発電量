@@ -1,0 +1,50 @@
+import csv
+import math
+from datetime import datetime, timedelta
+
+# パラメータ
+K = 0.85  # K係数
+a = -0.004  # a係数
+P = 33.65  # 圧力（hPa）
+latitude = 35.9776841  # 緯度（度）
+longitude = 140.2684513  # 経度（度）
+tilt_angle_degree = 10  # 傾斜角（度）
+azimuth_angle_degree = 34  # 方位角（度）
+
+# 関数: 斜面日射量の計算
+def calculate_slope_irradiance(direct_irradiance, scattered_irradiance):
+    if direct_irradiance == 0:
+        return scattered_irradiance
+    else:
+        return direct_irradiance * math.sin(math.radians(tilt_angle_degree)) + scattered_irradiance
+
+# 関数: 推定発電量の計算
+def calculate_estimated_energy(slope_irradiance, temperature):
+    return slope_irradiance * K * (1 + a * (temperature - 25)) * P / 1000
+
+# 測定データのファイル名
+measured_data_file = '測定.csv'
+
+# 結果をCSVファイルに出力
+with open('推定発電量_行ごと.csv', 'w', newline='',encoding='shift_jis') as csvfile:
+    fieldnames = ['日時', '推定発電量']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    
+    with open(measured_data_file, newline='', encoding='shift_jis') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            date_str = row['日時']
+            measured_irradiance = float(row['水平面日射量'])
+            temperature = float(row['気温'])
+            scattered_irradiance = float(row['水平面分散日射量'])
+            direct_irradiance = float(row['法線面直達日射量'])
+            
+            # 斜面日射量の計算
+            slope_irradiance = calculate_slope_irradiance(direct_irradiance, scattered_irradiance)
+            
+            # 推定発電量の計算
+            estimated_energy = calculate_estimated_energy(slope_irradiance, temperature)
+            
+            # 結果をCSVに書き込む
+            writer.writerow({'日時': date_str, '推定発電量': estimated_energy})
