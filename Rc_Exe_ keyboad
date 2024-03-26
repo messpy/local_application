@@ -1,0 +1,25 @@
+import keyboard
+
+def on_key_pressed(event):
+    # 修飾子の情報を取得
+    modifiers = []
+    if event.shift:
+        modifiers.append('Shift')
+    if event.ctrl:
+        modifiers.append('Ctrl')
+    if event.alt:
+        modifiers.append('Alt')
+    if event.meta:
+        modifiers.append('Meta')
+
+    # 修飾子とキーを組み合わせて出力
+    if modifiers:
+        print("入力されたキーボードの組み合わせ:", '+'.join(modifiers) + '+' + event.name)
+    else:
+        print("入力されたキー:", event.name)
+
+# キーボードの入力を監視し、入力されたキーを検知する
+keyboard.on_press(on_key_pressed)
+
+# プログラムが終了されるまで実行を継続する
+keyboard.wait('esc')  # 例: ESC キーが押されるまで待機
