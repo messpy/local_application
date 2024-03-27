@@ -1,0 +1,10 @@
+import subprocess
+
+# adb logcat コマンドを実行し、出力を取得
+process = subprocess.Popen(['adb', 'logcat'], stdout=subprocess.PIPE)
+
+# 出力を行ごとに読み込み、'abc'を含む行をフィルタリングして出力
+for line in process.stdout:
+    line = line.decode('utf-8').strip()
+    if 'abc' in line:
+        print(line)
