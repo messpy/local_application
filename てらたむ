@@ -1,0 +1,26 @@
+import serial
+
+def main():
+    port_name = input("シリアルポート名を入力してください（例: COM1、/dev/ttyUSB0）: ")
+    baud_rate = int(input("ボーレートを入力してください（例: 9600）: "))
+
+    try:
+        ser = serial.Serial(port_name, baud_rate)
+        print(f"シリアルポート {port_name} に接続しました。")
+
+        while True:
+            command = input("送信するコマンドを入力してください（終了するには q を入力）: ")
+            if command.lower() == 'q':
+                break
+            ser.write(command.encode())  # コマンドをバイト列にエンコードして送信
+            response = ser.readline().decode().strip()  # レスポンスを受信してデコード
+            print("レスポンス:", response)
+
+        ser.close()
+        print("シリアルポートを閉じました。")
+
+    except serial.SerialException as e:
+        print("エラー:", e)
+
+if __name__ == "__main__":
+    main()
