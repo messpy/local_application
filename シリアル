@@ -1,0 +1,26 @@
+import serial.tools.list_ports
+
+# 使用可能なシリアルポートのリストを取得
+ports = serial.tools.list_ports.comports()
+
+# ユーザーにシリアルポートを選択させる
+print("使用可能なシリアルポート:")
+for i, (port, desc, hwid) in enumerate(sorted(ports), 1):
+    print(f"{i}: {port} - {desc}")
+
+selection = input("使用するシリアルポートの番号を入力してください: ")
+
+try:
+    selection_index = int(selection) - 1
+    selected_port = sorted(ports)[selection_index][0]
+    print(f"選択されたポート: {selected_port}")
+    
+    # ここで選択されたポートを使用して通信を行う処理を追加します
+    # 例えば:
+    # ser = serial.Serial(selected_port, 9600)
+    # ser.write(b'Hello')
+    # response = ser.read(10)
+    # ser.close()
+    
+except (ValueError, IndexError):
+    print("無効な選択です。番号を正しく入力してください。")
